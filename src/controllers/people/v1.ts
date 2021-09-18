@@ -6,6 +6,7 @@ import channel, { ChannelDocument, IChannel } from "../../models/channel";
 import message, { MessageDocument } from "../../models/message";
 import fs from "fs";
 import path from "path";
+import { ERROR, OK, NO_ACCESS_TO_SOURCE, CREATED } from "../../helpers/json";
 
 export const myChannels = async (req: Request, res: Response) => {
     try {
@@ -36,17 +37,12 @@ export const myChannels = async (req: Request, res: Response) => {
             });
         }
 
-        res.status(200).json({
-            isError: false,
-            description: "showing lists of channels loaded",
+        OK(res, {
             channels: finalResults,
             channelsTotal,
         });
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -55,17 +51,12 @@ export const searchByUsername = async (req: Request, res: Response) => {
         const _auth = await auth.findOne({ [AuthDocument.username]: req.params.username });
         const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!._id });
 
-        res.status(200).json({
-            isError: false,
-            description: "showing people by their username",
+        OK(res, {
             people: _people,
             username: _auth!!.username,
         });
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -89,24 +80,16 @@ export const myMessagesByChannelId = async (req: Request, res: Response) => {
             const messages = await message.find(messagesFilter).sort({ _id: -1 }).skip(skip).limit(limit);
             const messagesTotal = await message.countDocuments(messagesFilter);
 
-            res.status(200).json({
-                isError: false,
-                description: "showing lists of messages",
+            OK(res, {
                 messages,
                 messagesTotal,
                 nameOfPartner: peoplePartner!!.name,
             });
         } else {
-            res.status(401).json({
-                isError: true,
-                description: "this people have no access to this channel",
-            });
+            NO_ACCESS_TO_SOURCE(res);
         }
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -115,17 +98,12 @@ export const me = async (req: Request, res: Response) => {
         const _auth = await auth.findById(req.tokenVerified.id);
         const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!.id });
 
-        res.status(500).json({
-            isError: false,
-            description: "showing people profile",
+        OK(res, {
             people: _people,
             username: _auth!!.username,
         });
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -146,17 +124,12 @@ export const add = async (req: Request, res: Response) => {
             [PeopleDocument.authId]: _auth._id,
         });
 
-        res.status(201).json({
-            isError: false,
-            description: "people registered",
+        CREATED(res, {
             people: _people,
             username: _auth.username,
         });
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -190,16 +163,11 @@ export const sendMessage = async (req: Request, res: Response) => {
 
         req.webSocket.emit(channelToUse._id);
 
-        res.status(201).json({
-            isError: false,
-            description: "message sent",
+        CREATED(res, {
             message: _message,
         });
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -221,22 +189,14 @@ export const readMessages = async (req: Request, res: Response) => {
                 }
             );
 
-            res.status(200).json({
-                isError: false,
-                description: "messages readed",
+            OK(res, {
                 readedTotal: updatedMessages.nModified,
             });
         } else {
-            res.status(401).json({
-                isError: true,
-                description: "this people have no access to this channel",
-            });
+            NO_ACCESS_TO_SOURCE(res);
         }
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -254,17 +214,12 @@ export const update = async (req: Request, res: Response) => {
             { new: true }
         );
 
-        res.status(200).json({
-            isError: false,
-            description: "profile updated",
+        OK(res, {
             people: _people,
             username: _auth!!.username,
         });
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -287,23 +242,15 @@ export const updatePassword = async (req: Request, res: Response) => {
 
             const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!._id });
 
-            res.status(200).json({
-                isError: false,
-                description: "profile password updated",
+            OK(res, {
                 people: _people,
                 username: _auth!!.username,
             });
         } else {
-            res.status(500).json({
-                isError: true,
-                description: "invalid old password",
-            });
+            ERROR(res, "invalid old password");
         }
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -322,18 +269,12 @@ export const updateAvatar = async (req: Request, res: Response) => {
 
         if (oldPeople!!.avatar !== "default-avatar.png") fs.unlinkSync(path.join(`public/uploads/${oldPeople!!.avatar}`));
 
-        res.status(200).json({
-            isError: false,
-            description: "profile avatar updated",
+        OK(res, {
             people: _people,
             username: _auth!!.username,
         });
     } catch (e: any) {
         fs.unlinkSync(path.join(`public/uploads/${req.file!!.filename}`));
-
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };

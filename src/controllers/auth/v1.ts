@@ -3,6 +3,7 @@ import auth, { AuthDocument } from "../../models/auth";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { TOKEN_SECRET } from "../../helpers/environments";
+import { ERROR, LOGIN_FAILED, LOGIN_SUCCESS, TOKEN_REFRESHED } from "../../helpers/json";
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -29,24 +30,16 @@ export const login = async (req: Request, res: Response) => {
                 { expiresIn: "7d" }
             );
 
-            res.status(200).json({
-                isError: false,
-                description: "login success",
+            LOGIN_SUCCESS(res, {
                 username: _auth.username,
                 token,
                 refreshToken,
             });
         } else {
-            res.status(401).json({
-                isError: true,
-                description: "submitted credentials failed to authenticate",
-            });
+            LOGIN_FAILED(res);
         }
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
 
@@ -72,17 +65,12 @@ export const refresh = async (req: Request, res: Response) => {
             { expiresIn: "7d" }
         );
 
-        res.status(200).json({
-            isError: false,
-            description: "token refreshed",
+        TOKEN_REFRESHED(res, {
             username: _auth!!.username,
             token,
             refreshToken,
         });
     } catch (e: any) {
-        res.status(500).json({
-            isError: true,
-            description: e.message,
-        });
+        ERROR(res, e.message);
     }
 };
