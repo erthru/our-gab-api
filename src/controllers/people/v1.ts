@@ -270,24 +270,35 @@ export const update = async (req: Request, res: Response) => {
 
 export const updatePassword = async (req: Request, res: Response) => {
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const { oldPassword, newPassword } = req.body;
 
-        const _auth = await auth.findByIdAndUpdate(
-            req.tokenVerified.id,
-            {
-                [AuthDocument.password]: hashedPassword,
-            },
-            { new: true }
-        );
+        const oldAuth = await auth.findById(req.tokenVerified.id);
 
-        const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!._id });
+        if (await bcrypt.compare(oldPassword, oldAuth?.password!!)) {
+            const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
 
-        res.status(200).json({
-            error: false,
-            description: "profile password updated",
-            people: _people,
-            username: _auth!!.username,
-        });
+            const _auth = await auth.findByIdAndUpdate(
+                req.tokenVerified.id,
+                {
+                    [AuthDocument.password]: hashedPassword,
+                },
+                { new: true }
+            );
+
+            const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!._id });
+
+            res.status(200).json({
+                error: false,
+                description: "profile password updated",
+                people: _people,
+                username: _auth!!.username,
+            });
+        } else {
+            res.status(500).json({
+                error: true,
+                description: "invalid old password",
+            });
+        }
     } catch (e: any) {
         res.status(500).json({
             error: true,
