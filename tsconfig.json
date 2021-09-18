@@ -6,6 +6,6 @@
         "outDir": "./build",
         "esModuleInterop": true,
         "strict": true,
-        "typeRoots": ["./src/typing-stubs", "./node_modules/@types"]
+        "typeRoots": ["./typing-stubs", "./node_modules/@types"]
     }
 }

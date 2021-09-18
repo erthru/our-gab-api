@@ -2,10 +2,10 @@
     "name": "our-gab-api",
     "version": "1.0.0",
     "description": "our grab api",
-    "main": "src/index.ts",
+    "main": "index.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "watch": "nodemon src/index.ts"
+        "watch": "nodemon index.ts"
     },
     "keywords": [
         "nodejs",
