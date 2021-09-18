@@ -188,6 +188,8 @@ export const sendMessage = async (req: Request, res: Response) => {
             [MessageDocument.channelId]: channelToUse!!._id,
         });
 
+        req.webSocket.emit(channelToUse._id);
+
         res.status(201).json({
             error: false,
             description: "message sent",
