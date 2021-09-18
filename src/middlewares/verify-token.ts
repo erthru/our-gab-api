@@ -14,7 +14,7 @@ const verify = (req: Request, res: Response, next: NextFunction) => {
 
         if (tokenVerified.isRefreshToken)
             res.status(401).json({
-                error: true,
+                isError: true,
                 description: "invalid token / expired",
             });
         else {
@@ -23,7 +23,7 @@ const verify = (req: Request, res: Response, next: NextFunction) => {
         }
     } catch (e: any) {
         res.status(401).json({
-            error: true,
+            isError: true,
             description: "invalid token / expired",
         });
     }
@@ -36,7 +36,7 @@ const verifyForRefresh = (req: Request, res: Response, next: NextFunction) => {
 
         if (!tokenVerified.isRefreshToken)
             res.status(401).json({
-                error: true,
+                isError: true,
                 description: "invalid token / expired",
             });
         else {
@@ -45,7 +45,7 @@ const verifyForRefresh = (req: Request, res: Response, next: NextFunction) => {
         }
     } catch (e: any) {
         res.status(401).json({
-            error: true,
+            isError: true,
             description: "invalid token / expired",
         });
     }

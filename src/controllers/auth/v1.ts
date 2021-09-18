@@ -30,7 +30,7 @@ export const login = async (req: Request, res: Response) => {
             );
 
             res.status(200).json({
-                error: false,
+                isError: false,
                 description: "login success",
                 username: _auth.username,
                 token,
@@ -38,13 +38,13 @@ export const login = async (req: Request, res: Response) => {
             });
         } else {
             res.status(401).json({
-                error: true,
+                isError: true,
                 description: "submitted credentials failed to authenticate",
             });
         }
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -73,7 +73,7 @@ export const refresh = async (req: Request, res: Response) => {
         );
 
         res.status(200).json({
-            error: false,
+            isError: false,
             description: "token refreshed",
             username: _auth!!.username,
             token,
@@ -81,7 +81,7 @@ export const refresh = async (req: Request, res: Response) => {
         });
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }

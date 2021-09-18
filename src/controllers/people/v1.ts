@@ -37,14 +37,14 @@ export const myChannels = async (req: Request, res: Response) => {
         }
 
         res.status(200).json({
-            error: false,
+            isError: false,
             description: "showing lists of channels loaded",
             channels: finalResults,
             channelsTotal,
         });
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -56,14 +56,14 @@ export const searchByUsername = async (req: Request, res: Response) => {
         const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!._id });
 
         res.status(200).json({
-            error: false,
+            isError: false,
             description: "showing people by their username",
             people: _people,
             username: _auth!!.username,
         });
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -90,7 +90,7 @@ export const myMessagesByChannelId = async (req: Request, res: Response) => {
             const messagesTotal = await message.countDocuments(messagesFilter);
 
             res.status(200).json({
-                error: false,
+                isError: false,
                 description: "showing lists of messages",
                 messages,
                 messagesTotal,
@@ -98,13 +98,13 @@ export const myMessagesByChannelId = async (req: Request, res: Response) => {
             });
         } else {
             res.status(401).json({
-                error: true,
+                isError: true,
                 description: "this people have no access to this channel",
             });
         }
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -116,14 +116,14 @@ export const me = async (req: Request, res: Response) => {
         const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!.id });
 
         res.status(500).json({
-            error: false,
+            isError: false,
             description: "showing people profile",
             people: _people,
             username: _auth!!.username,
         });
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -147,14 +147,14 @@ export const add = async (req: Request, res: Response) => {
         });
 
         res.status(201).json({
-            error: false,
+            isError: false,
             description: "people registered",
             people: _people,
             username: _auth.username,
         });
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -191,13 +191,13 @@ export const sendMessage = async (req: Request, res: Response) => {
         req.webSocket.emit(channelToUse._id);
 
         res.status(201).json({
-            error: false,
+            isError: false,
             description: "message sent",
             message: _message,
         });
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -222,19 +222,19 @@ export const readMessages = async (req: Request, res: Response) => {
             );
 
             res.status(200).json({
-                error: false,
+                isError: false,
                 description: "messages readed",
                 readedTotal: updatedMessages.nModified,
             });
         } else {
             res.status(401).json({
-                error: true,
+                isError: true,
                 description: "this people have no access to this channel",
             });
         }
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -255,14 +255,14 @@ export const update = async (req: Request, res: Response) => {
         );
 
         res.status(200).json({
-            error: false,
+            isError: false,
             description: "profile updated",
             people: _people,
             username: _auth!!.username,
         });
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -288,20 +288,20 @@ export const updatePassword = async (req: Request, res: Response) => {
             const _people = await people.findOne({ [PeopleDocument.authId]: _auth!!._id });
 
             res.status(200).json({
-                error: false,
+                isError: false,
                 description: "profile password updated",
                 people: _people,
                 username: _auth!!.username,
             });
         } else {
             res.status(500).json({
-                error: true,
+                isError: true,
                 description: "invalid old password",
             });
         }
     } catch (e: any) {
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
@@ -323,7 +323,7 @@ export const updateAvatar = async (req: Request, res: Response) => {
         if (oldPeople!!.avatar !== "default-avatar.png") fs.unlinkSync(path.join(`public/uploads/${oldPeople!!.avatar}`));
 
         res.status(200).json({
-            error: false,
+            isError: false,
             description: "profile avatar updated",
             people: _people,
             username: _auth!!.username,
@@ -332,7 +332,7 @@ export const updateAvatar = async (req: Request, res: Response) => {
         fs.unlinkSync(path.join(`public/uploads/${req.file!!.filename}`));
 
         res.status(500).json({
-            error: true,
+            isError: true,
             description: e.message,
         });
     }
