@@ -240,12 +240,14 @@ export const readMessages = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
     try {
+        const { name } = req.body;
+
         const _auth = await auth.findById(req.tokenVerified.id);
 
         const _people = await people.findOneAndUpdate(
             { [PeopleDocument.authId]: _auth!!._id },
             {
-                [PeopleDocument.name]: req.body.name,
+                [PeopleDocument.name]: name,
             },
             { new: true }
         );
