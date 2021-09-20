@@ -20,13 +20,13 @@ export const myChannels = async (req: Request, res: Response) => {
             [ChannelDocument.peopleIds]: _people!!._id,
         };
 
-        const channels = await channel.find(channelFilter).populate(PeopleDocument.schemaName).sort({ _id: -1 }).skip(skip).limit(limit);
+        const channels = await channel.find(channelFilter).populate(PeopleDocument.schemaName).sort({ createdAt: -1 }).skip(skip).limit(limit);
         const channelsTotal = await channel.countDocuments(channelFilter);
 
         const finalResults = [];
 
         for (let channel of channels) {
-            const _message = await message.findOne({ [MessageDocument.channelId]: channel._id }).sort({ _id: -1 });
+            const _message = await message.findOne({ [MessageDocument.channelId]: channel._id }).sort({ createdAt: -1 });
 
             const filterdPeopleIds = channel!!.peopleIds!!.filter((peopleId) => peopleId !== _people!!.id);
             const peoplePartner = await people.findById(filterdPeopleIds[0]);
@@ -85,7 +85,7 @@ export const myMessagesByChannelId = async (req: Request, res: Response) => {
                 [MessageDocument.channelId]: req.params.channelId,
             };
 
-            const messages = await message.find(messagesFilter).sort({ _id: -1 }).skip(skip).limit(limit);
+            const messages = await message.find(messagesFilter).sort({ createdAt: -1 }).skip(skip).limit(limit);
             const messagesTotal = await message.countDocuments(messagesFilter);
 
             OK(res, {
