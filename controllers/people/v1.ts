@@ -20,7 +20,7 @@ export const myChannels = async (req: Request, res: Response) => {
             [ChannelDocument.peopleIds]: _people!!._id,
         };
 
-        const channels = await channel.find(channelFilter).populate(PeopleDocument.schemaName).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const channels = await channel.find(channelFilter).populate(PeopleDocument.schemaName).sort({ updatedAt: -1 }).skip(skip).limit(limit);
         const channelsTotal = await channel.countDocuments(channelFilter);
 
         const finalResults = [];
@@ -167,6 +167,10 @@ export const sendMessage = async (req: Request, res: Response) => {
             [MessageDocument.isRead]: false,
             [MessageDocument.peopleSenderId]: _people!!._id,
             [MessageDocument.channelId]: channelToUse!!._id,
+        });
+
+        await channel.findByIdAndUpdate(channelToUse._id, {
+            [ChannelDocument.peopleIds]: channelToUse.peopleIds,
         });
 
         const peopleReceiver = await people.findById(peopleReceiverId);
