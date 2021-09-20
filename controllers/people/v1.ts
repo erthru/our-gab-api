@@ -91,7 +91,7 @@ export const myMessagesByChannelId = async (req: Request, res: Response) => {
             OK(res, {
                 messages,
                 messagesTotal,
-                nameOfPartner: peoplePartner!!.name,
+                peoplePartner,
             });
         } else {
             NO_ACCESS_TO_SOURCE(res);
