@@ -169,7 +169,8 @@ export const sendMessage = async (req: Request, res: Response) => {
             [MessageDocument.channelId]: channelToUse!!._id,
         });
 
-        req.webSocket.emit(channelToUse._id);
+        const peopleReceiver = await people.findById(peopleReceiverId);
+        req.webSocket.emit(peopleReceiver?.authId!!);
 
         CREATED(res, {
             message: _message,
