@@ -26,14 +26,22 @@ export const myChannels = async (req: Request, res: Response) => {
         const finalResults = [];
 
         for (let channel of channels) {
-            const _message = await message
-                .findOne({ [MessageDocument.channelId]: channel._id })
-                .populate("peopleSender")
-                .sort({ _id: -1 });
+            const _message = await message.findOne({ [MessageDocument.channelId]: channel._id }).sort({ _id: -1 });
+
+            const filterdPeopleIds = channel!!.peopleIds!!.filter((peopleId) => peopleId !== _people!!.id);
+            const peoplePartner = await people.findById(filterdPeopleIds[0]);
+
+            const unreadMessage = await message.findOne({
+                [MessageDocument.isRead]: false,
+                [MessageDocument.peopleSenderId]: peoplePartner!!._id,
+                [MessageDocument.channelId]: channel._id,
+            });
 
             finalResults.push({
                 ...channel.toJSON(),
-                message: _message,
+                messageLast: _message,
+                nameOfPartner: peoplePartner!!.name,
+                isHaveUnread: unreadMessage !== null,
             });
         }
 

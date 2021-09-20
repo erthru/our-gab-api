@@ -18,7 +18,7 @@ router.get("/v1/people/search/:username", verifyToken.verify, v1PeopleController
 router.get("/v1/people/search/:username", verifyToken.verify, v1PeopleController.searchByUsername);
 router.post("/v1/people", v1PeopleController.add);
 router.post("/v1/people/me/message", verifyToken.verify, v1PeopleController.sendMessage);
-router.put("/v1/people/me/channel/:channelId", verifyToken.verify, v1PeopleController.readMessages);
+router.put("/v1/people/me/channel/:channelId/message/read", verifyToken.verify, v1PeopleController.readMessages);
 router.put("/v1/people/me", verifyToken.verify, v1PeopleController.update);
 router.put("/v1/people/me/password", verifyToken.verify, v1PeopleController.updatePassword);
 router.put("/v1/people/me/avatar", verifyToken.verify, uploader(UploadType.avatar).single(PeopleDocument.avatar), v1PeopleController.updateAvatar);
